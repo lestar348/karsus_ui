@@ -1,0 +1,7 @@
+[package]
+name = "lcdhat-sys"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+links = "lcdhat"
+build = "build.rs"

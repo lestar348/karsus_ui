@@ -1,0 +1,21 @@
+[workspace]
+members = [
+    ".",
+    "crates/lcdhat-sys",
+    "crates/lcdhat",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[package]
+name = "karsus_ui_backend"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+lcdhat = { path = "crates/lcdhat" }

@@ -1,0 +1,3 @@
+[submodule "vendor/lcdhat"]
+	path = vendor/lcdhat
+	url = https://github.com/lestar348/lcdhat.git

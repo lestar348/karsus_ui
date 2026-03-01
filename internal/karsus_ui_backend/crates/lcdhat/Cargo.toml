@@ -1,0 +1,8 @@
+[package]
+name = "lcdhat"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+lcdhat-sys = { path = "../lcdhat-sys" }
