@@ -23,7 +23,7 @@ impl ButtonStyle {
         Self {
             normal: ButtonPalette {
                 background: theme.background,
-                foreground: theme.primary,
+                foreground: theme.on_background,
                 border: theme.primary,
             },
             focused: ButtonPalette {
@@ -68,18 +68,27 @@ impl Text {
 pub struct Button {
     pub id: WidgetId,
     pub label: String,
-    pub style: ButtonStyle,
+    pub style: Option<ButtonStyle>,
     pub on_press: Option<ButtonActionId>,
 }
 
 impl Button {
-    pub fn new(id: WidgetId, label: impl Into<String>, style: ButtonStyle) -> Self {
+    pub fn new(id: WidgetId, label: impl Into<String>) -> Self {
         Self {
             id,
             label: label.into(),
-            style,
+            style: None,
             on_press: None,
         }
+    }
+
+    pub fn with_style(mut self, style: ButtonStyle) -> Self {
+        self.style = Some(style);
+        self
+    }
+
+    pub fn with_theme(self, theme: crate::Theme) -> Self {
+        self.with_style(ButtonStyle::themed(theme))
     }
 
     pub fn on_press(mut self, action: ButtonActionId) -> Self {
@@ -141,8 +150,12 @@ impl Widget {
         Self::Text(Text::new(text))
     }
 
-    pub fn button(id: WidgetId, label: impl Into<String>, style: ButtonStyle) -> Self {
-        Self::Button(Button::new(id, label, style))
+    pub fn button(id: WidgetId, label: impl Into<String>) -> Self {
+        Self::Button(Button::new(id, label))
+    }
+
+    pub fn button_with_style(id: WidgetId, label: impl Into<String>, style: ButtonStyle) -> Self {
+        Self::Button(Button::new(id, label).with_style(style))
     }
 
     pub fn row(children: Vec<Widget>) -> Self {
@@ -162,13 +175,15 @@ mod tests {
     fn themed_style_uses_on_secondary_for_focused_foreground() {
         let theme = crate::Theme {
             background: 1,
-            primary: 2,
-            on_primary: 3,
-            secondary: 4,
-            on_secondary: 5,
+            on_background: 2,
+            primary: 3,
+            on_primary: 4,
+            secondary: 5,
+            on_secondary: 6,
         };
 
         let style = ButtonStyle::themed(theme);
-        assert_eq!(style.focused.foreground, 5);
+        assert_eq!(style.focused.foreground, 6);
+        assert_eq!(style.normal.foreground, 2);
     }
 }

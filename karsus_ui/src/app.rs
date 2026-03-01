@@ -4,6 +4,13 @@ use crate::event::UiEvent;
 use crate::layout::{build_layout, initial_focus, move_focus, FocusDirection, LayoutFrame, Rect};
 use crate::page::{Page, PageCommand};
 
+const TITLE_BAR_HEIGHT: u16 = 16;
+
+struct PageSnapshot {
+    frame: LayoutFrame,
+    title: String,
+}
+
 pub struct App {
     config: AppConfig,
     lcd: karsus_ui_backend::LcdHat,
@@ -107,27 +114,42 @@ impl App {
     }
 
     fn redraw(&mut self) -> UiResult<()> {
-        let frame = self.current_layout_frame()?;
-        self.sync_focus(&frame)?;
+        let snapshot = self.current_page_snapshot()?;
+        self.sync_focus(&snapshot.frame)?;
         crate::renderer::render(
             &mut self.lcd,
-            &frame,
+            &snapshot.frame,
             self.config.theme,
             self.focused_button,
+            &snapshot.title,
         )?;
         Ok(())
     }
 
     fn current_layout_frame(&self) -> UiResult<LayoutFrame> {
+        Ok(self.current_page_snapshot()?.frame)
+    }
+
+    fn current_page_snapshot(&self) -> UiResult<PageSnapshot> {
         let page = self.pages.last().ok_or(UiError::NoPages)?;
+        let title = page.title().to_string();
         let root = page.view();
+        let content_y = if title.is_empty() {
+            0
+        } else {
+            TITLE_BAR_HEIGHT
+        };
+        let content_height = karsus_ui_backend::LCD_HEIGHT.saturating_sub(content_y);
         let bounds = Rect {
             x: 0,
-            y: 0,
+            y: content_y,
             width: karsus_ui_backend::LCD_WIDTH,
-            height: karsus_ui_backend::LCD_HEIGHT,
+            height: content_height,
         };
-        build_layout(&root, bounds)
+        Ok(PageSnapshot {
+            frame: build_layout(&root, bounds)?,
+            title,
+        })
     }
 
     fn sync_focus(&mut self, frame: &LayoutFrame) -> UiResult<()> {
@@ -290,7 +312,7 @@ mod tests {
                 },
                 id: 42,
                 label: "ok".to_string(),
-                style: crate::ButtonStyle::themed(crate::Theme::default()),
+                style: Some(crate::ButtonStyle::themed(crate::Theme::default())),
                 action: Some(7),
             }],
         };

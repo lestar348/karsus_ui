@@ -31,7 +31,7 @@ pub struct ButtonLayout {
     pub rect: Rect,
     pub id: WidgetId,
     pub label: String,
-    pub style: ButtonStyle,
+    pub style: Option<ButtonStyle>,
     pub action: Option<ButtonActionId>,
 }
 
@@ -240,7 +240,7 @@ pub(crate) fn text_height(font: Font) -> u16 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Button, ButtonStyle, Column, Row, Theme, Widget};
+    use crate::{Button, Column, Row, Widget};
 
     fn bounds() -> Rect {
         Rect {
@@ -251,15 +251,11 @@ mod tests {
         }
     }
 
-    fn style() -> ButtonStyle {
-        ButtonStyle::themed(Theme::default())
-    }
-
     #[test]
     fn row_layout_splits_width() {
         let widget = Widget::Row(Row::new(vec![
-            Widget::Button(Button::new(1, "A", style())),
-            Widget::Button(Button::new(2, "B", style())),
+            Widget::Button(Button::new(1, "A")),
+            Widget::Button(Button::new(2, "B")),
         ]));
 
         let frame = build_layout(&widget, bounds()).expect("row layout should work");
@@ -273,8 +269,8 @@ mod tests {
     #[test]
     fn column_layout_splits_height() {
         let widget = Widget::Column(Column::new(vec![
-            Widget::Button(Button::new(1, "A", style())),
-            Widget::Button(Button::new(2, "B", style())),
+            Widget::Button(Button::new(1, "A")),
+            Widget::Button(Button::new(2, "B")),
         ]));
 
         let frame = build_layout(&widget, bounds()).expect("column layout should work");
@@ -288,8 +284,8 @@ mod tests {
     #[test]
     fn detects_duplicate_widget_id() {
         let widget = Widget::Column(Column::new(vec![
-            Widget::Button(Button::new(1, "A", style())),
-            Widget::Button(Button::new(1, "B", style())),
+            Widget::Button(Button::new(1, "A")),
+            Widget::Button(Button::new(1, "B")),
         ]));
 
         let result = build_layout(&widget, bounds());
@@ -299,8 +295,8 @@ mod tests {
     #[test]
     fn initial_focus_picks_first_button() {
         let widget = Widget::Column(Column::new(vec![
-            Widget::Button(Button::new(10, "A", style())),
-            Widget::Button(Button::new(20, "B", style())),
+            Widget::Button(Button::new(10, "A")),
+            Widget::Button(Button::new(20, "B")),
         ]));
 
         let frame = build_layout(&widget, bounds()).expect("column layout should work");
@@ -311,12 +307,12 @@ mod tests {
     fn geo_focus_moves_in_all_directions() {
         let widget = Widget::Column(Column::new(vec![
             Widget::Row(Row::new(vec![
-                Widget::Button(Button::new(1, "TL", style())),
-                Widget::Button(Button::new(2, "TR", style())),
+                Widget::Button(Button::new(1, "TL")),
+                Widget::Button(Button::new(2, "TR")),
             ])),
             Widget::Row(Row::new(vec![
-                Widget::Button(Button::new(3, "BL", style())),
-                Widget::Button(Button::new(4, "BR", style())),
+                Widget::Button(Button::new(3, "BL")),
+                Widget::Button(Button::new(4, "BR")),
             ])),
         ]));
 
@@ -330,7 +326,7 @@ mod tests {
 
     #[test]
     fn focus_keeps_current_when_no_candidate() {
-        let widget = Widget::Button(Button::new(1, "Only", style()));
+        let widget = Widget::Button(Button::new(1, "Only"));
         let frame = build_layout(&widget, bounds()).expect("single button layout should work");
 
         assert_eq!(move_focus(&frame, Some(1), FocusDirection::Up), Some(1));

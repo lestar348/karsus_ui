@@ -1,6 +1,5 @@
 use karsus_ui::{
-    App, AppConfig, Button, ButtonStyle, Column, Page, PageCommand, Text, Theme, UiError, UiEvent,
-    Widget,
+    App, AppConfig, Button, Column, Page, PageCommand, Text, Theme, UiError, UiEvent, Widget,
 };
 
 const BTN_OPEN_DETAILS: u32 = 1;
@@ -11,6 +10,7 @@ const ACTION_NOOP: u32 = 101;
 
 const APP_THEME: Theme = Theme {
     background: karsus_ui::color::BLACK,
+    on_background: karsus_ui::color::WHITE,
     primary: karsus_ui::color::WHITE,
     on_primary: karsus_ui::color::BLACK,
     secondary: karsus_ui::color::RED,
@@ -42,19 +42,30 @@ impl Page for HomePage {
     }
 
     fn view(&self) -> Widget {
-        let style = ButtonStyle::themed(APP_THEME);
+        let alt_theme = Theme {
+            background: APP_THEME.background,
+            on_background: APP_THEME.on_background,
+            primary: karsus_ui::color::GREEN,
+            on_primary: karsus_ui::color::BLACK,
+            secondary: karsus_ui::color::YELLOW,
+            on_secondary: karsus_ui::color::BLACK,
+        };
+
         Widget::Column(
             Column::new(vec![
-                Widget::Text(Text::new("Karsus UI Demo").color(APP_THEME.primary)),
+                Widget::Text(Text::new("Karsus UI Demo")),
                 Widget::Button(
-                    Button::new(BTN_OPEN_DETAILS, "Open details", style)
-                        .on_press(ACTION_OPEN_DETAILS),
+                    Button::new(BTN_OPEN_DETAILS, "Open details").on_press(ACTION_OPEN_DETAILS),
                 ),
-                Widget::Button(Button::new(BTN_NOOP, "No-op", style).on_press(ACTION_NOOP)),
-                Widget::Text(
-                    Text::new(format!("K2: {} K3: {}", self.k2_hits, self.k3_hits))
-                        .color(APP_THEME.primary),
+                Widget::Button(
+                    Button::new(BTN_NOOP, "No-op override")
+                        .with_theme(alt_theme)
+                        .on_press(ACTION_NOOP),
                 ),
+                Widget::Text(Text::new(format!(
+                    "K2: {} K3: {}",
+                    self.k2_hits, self.k3_hits
+                ))),
             ])
             .spacing(4),
         )
@@ -101,12 +112,12 @@ impl Page for DetailsPage {
     fn view(&self) -> Widget {
         Widget::Column(
             Column::new(vec![
-                Widget::Text(Text::new("Details page").color(APP_THEME.primary)),
-                Widget::Text(Text::new("Press K1 to go back").color(APP_THEME.primary)),
-                Widget::Text(
-                    Text::new(format!("K2: {} K3: {}", self.k2_hits, self.k3_hits))
-                        .color(APP_THEME.primary),
-                ),
+                Widget::Text(Text::new("Details page")),
+                Widget::Text(Text::new("Press K1 to go back")),
+                Widget::Text(Text::new(format!(
+                    "K2: {} K3: {}",
+                    self.k2_hits, self.k3_hits
+                ))),
             ])
             .spacing(2),
         )

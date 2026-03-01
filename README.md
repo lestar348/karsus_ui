@@ -33,6 +33,7 @@ fn main() -> Result<(), UiError> {
     let config = AppConfig {
         theme: Theme {
             background: karsus_ui::color::WHITE,
+            on_background: karsus_ui::color::BLACK,
             primary: karsus_ui::color::BLACK,
             on_primary: karsus_ui::color::WHITE,
             secondary: karsus_ui::color::BLUE,
@@ -51,7 +52,7 @@ fn main() -> Result<(), UiError> {
 ### 2) Определение страницы
 
 ```rust
-use karsus_ui::{Button, ButtonStyle, Column, Page, PageCommand, Theme, UiEvent, Widget};
+use karsus_ui::{Button, Column, Page, PageCommand, Theme, UiEvent, Widget};
 
 const BTN_NEXT: u32 = 1;
 const ACTION_NEXT: u32 = 100;
@@ -60,11 +61,22 @@ struct HomePage;
 
 impl Page for HomePage {
     fn view(&self) -> Widget {
-        let style = ButtonStyle::themed(Theme::default());
+        let local_override = Theme {
+            background: karsus_ui::color::WHITE,
+            on_background: karsus_ui::color::BLACK,
+            primary: karsus_ui::color::BLACK,
+            on_primary: karsus_ui::color::WHITE,
+            secondary: karsus_ui::color::GREEN,
+            on_secondary: karsus_ui::color::BLACK,
+        };
+
         Widget::Column(
             Column::new(vec![
                 Widget::text("Home"),
-                Widget::Button(Button::new(BTN_NEXT, "Next", style).on_press(ACTION_NEXT)),
+                // Кнопка без style/theme override берет AppConfig.theme
+                Widget::Button(Button::new(BTN_NEXT, "Next").on_press(ACTION_NEXT)),
+                // Локальный override темы у конкретной кнопки
+                Widget::Button(Button::new(2, "Custom").with_theme(local_override)),
             ])
             .spacing(4),
         )
@@ -102,6 +114,7 @@ impl Page for HomePage {
 `AppConfig`:
 
 - `theme.background` — цвет фона.
+- `theme.on_background` — цвет контента поверх `background` (используется по умолчанию для `Text` и `title` страницы).
 - `theme.primary` — основной цвет (текст/границы).
 - `theme.on_primary` — цвет контента поверх `primary`.
 - `theme.secondary` — акцентный цвет (например, focused-кнопка).

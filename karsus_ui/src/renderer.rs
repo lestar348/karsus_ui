@@ -8,11 +8,23 @@ pub fn render(
     frame: &LayoutFrame,
     theme: Theme,
     focused: Option<WidgetId>,
+    title: &str,
 ) -> UiResult<()> {
     lcd.clear(theme.background)?;
 
+    if !title.is_empty() {
+        lcd.draw_text(
+            2,
+            2,
+            title,
+            karsus_ui_backend::Font::Font12,
+            theme.on_background,
+            theme.background,
+        )?;
+    }
+
     for text in &frame.texts {
-        let foreground = text.color.unwrap_or(theme.primary);
+        let foreground = text.color.unwrap_or(theme.on_background);
         lcd.draw_text(
             text.rect.x,
             text.rect.y,
@@ -24,7 +36,7 @@ pub fn render(
     }
 
     for button in &frame.buttons {
-        draw_button(lcd, button, focused == Some(button.id))?;
+        draw_button(lcd, button, theme, focused == Some(button.id))?;
     }
 
     lcd.present()?;
@@ -34,12 +46,16 @@ pub fn render(
 fn draw_button(
     lcd: &mut karsus_ui_backend::LcdHat,
     button: &ButtonLayout,
+    theme: Theme,
     is_focused: bool,
 ) -> UiResult<()> {
+    let style = button
+        .style
+        .unwrap_or_else(|| crate::ButtonStyle::themed(theme));
     let palette = if is_focused {
-        button.style.focused
+        style.focused
     } else {
-        button.style.normal
+        style.normal
     };
 
     let x0 = button.rect.x;
@@ -48,20 +64,12 @@ fn draw_button(
     let y1 = y0.saturating_add(button.rect.height.saturating_sub(1));
 
     lcd.draw_rect(x0, y0, x1, y1, palette.background, 1, true)?;
-    lcd.draw_rect(
-        x0,
-        y0,
-        x1,
-        y1,
-        palette.border,
-        button.style.border_width,
-        false,
-    )?;
+    lcd.draw_rect(x0, y0, x1, y1, palette.border, style.border_width, false)?;
 
     let text_y = y0
-        .saturating_add(button.style.padding)
+        .saturating_add(style.padding)
         .min(y1.saturating_sub(text_height(karsus_ui_backend::Font::Font12)));
-    let text_x = x0.saturating_add(button.style.padding).min(x1);
+    let text_x = x0.saturating_add(style.padding).min(x1);
 
     lcd.draw_text(
         text_x,
