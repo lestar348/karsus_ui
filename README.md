@@ -34,7 +34,9 @@ fn main() -> Result<(), UiError> {
         theme: Theme {
             background: karsus_ui::color::WHITE,
             primary: karsus_ui::color::BLACK,
+            on_primary: karsus_ui::color::WHITE,
             secondary: karsus_ui::color::BLUE,
+            on_secondary: karsus_ui::color::WHITE,
         },
         last_page_policy: LastPagePolicy::ExitApp,
         ..AppConfig::default()
@@ -101,7 +103,9 @@ impl Page for HomePage {
 
 - `theme.background` — цвет фона.
 - `theme.primary` — основной цвет (текст/границы).
+- `theme.on_primary` — цвет контента поверх `primary`.
 - `theme.secondary` — акцентный цвет (например, focused-кнопка).
+- `theme.on_secondary` — цвет текста/иконок поверх `secondary` (используется для текста focused-кнопки).
 - `last_page_policy`:
   - `LastPagePolicy::ExitApp` — `K1` на последней странице завершает `run()`.
   - `LastPagePolicy::IgnoreBack` — `K1` на последней странице игнорируется.

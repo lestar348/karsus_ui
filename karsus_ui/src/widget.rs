@@ -28,7 +28,7 @@ impl ButtonStyle {
             },
             focused: ButtonPalette {
                 background: theme.secondary,
-                foreground: theme.background,
+                foreground: theme.on_secondary,
                 border: theme.primary,
             },
             border_width: 1,
@@ -151,5 +151,24 @@ impl Widget {
 
     pub fn column(children: Vec<Widget>) -> Self {
         Self::Column(Column::new(children))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn themed_style_uses_on_secondary_for_focused_foreground() {
+        let theme = crate::Theme {
+            background: 1,
+            primary: 2,
+            on_primary: 3,
+            secondary: 4,
+            on_secondary: 5,
+        };
+
+        let style = ButtonStyle::themed(theme);
+        assert_eq!(style.focused.foreground, 5);
     }
 }

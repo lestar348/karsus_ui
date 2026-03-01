@@ -13,7 +13,9 @@ fn main() -> Result<(), UiError> {
         theme: Theme {
             background: karsus_ui::color::WHITE,
             primary: karsus_ui::color::BLACK,
+            on_primary: karsus_ui::color::WHITE,
             secondary: karsus_ui::color::BLUE,
+            on_secondary: karsus_ui::color::WHITE,
         },
         ..AppConfig::default()
     };

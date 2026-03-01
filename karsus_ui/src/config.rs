@@ -2,7 +2,9 @@
 pub struct Theme {
     pub background: u16,
     pub primary: u16,
+    pub on_primary: u16,
     pub secondary: u16,
+    pub on_secondary: u16,
 }
 
 impl Default for Theme {
@@ -10,7 +12,9 @@ impl Default for Theme {
         Self {
             background: karsus_ui_backend::color::WHITE,
             primary: karsus_ui_backend::color::BLACK,
+            on_primary: karsus_ui_backend::color::WHITE,
             secondary: karsus_ui_backend::color::BLUE,
+            on_secondary: karsus_ui_backend::color::WHITE,
         }
     }
 }
