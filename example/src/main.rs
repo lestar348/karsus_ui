@@ -8,15 +8,18 @@ const BTN_NOOP: u32 = 2;
 const ACTION_OPEN_DETAILS: u32 = 100;
 const ACTION_NOOP: u32 = 101;
 
+const APP_THEME: Theme = Theme {
+    background: karsus_ui::color::BLACK,
+    primary: karsus_ui::color::WHITE,
+    on_primary: karsus_ui::color::BLACK,
+    secondary: karsus_ui::color::RED,
+    on_secondary: karsus_ui::color::BLACK,
+};
+
 fn main() -> Result<(), UiError> {
     let config = AppConfig {
-        theme: Theme {
-            background: karsus_ui::color::WHITE,
-            primary: karsus_ui::color::BLACK,
-            on_primary: karsus_ui::color::WHITE,
-            secondary: karsus_ui::color::BLUE,
-            on_secondary: karsus_ui::color::WHITE,
-        },
+        theme: APP_THEME,
+        last_page_policy: karsus_ui::LastPagePolicy::IgnoreBack,
         ..AppConfig::default()
     };
 
@@ -38,7 +41,7 @@ impl Page for HomePage {
     }
 
     fn view(&self) -> Widget {
-        let style = ButtonStyle::themed(Theme::default());
+        let style = ButtonStyle::themed(APP_THEME);
         Widget::Column(
             Column::new(vec![
                 Widget::text("Karsus UI Demo"),
