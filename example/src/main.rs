@@ -1,5 +1,6 @@
 use karsus_ui::{
-    App, AppConfig, Button, ButtonStyle, Column, Page, PageCommand, Theme, UiError, UiEvent, Widget,
+    App, AppConfig, Button, ButtonStyle, Column, Page, PageCommand, Text, Theme, UiError, UiEvent,
+    Widget,
 };
 
 const BTN_OPEN_DETAILS: u32 = 1;
@@ -44,13 +45,16 @@ impl Page for HomePage {
         let style = ButtonStyle::themed(APP_THEME);
         Widget::Column(
             Column::new(vec![
-                Widget::text("Karsus UI Demo"),
+                Widget::Text(Text::new("Karsus UI Demo").color(APP_THEME.primary)),
                 Widget::Button(
                     Button::new(BTN_OPEN_DETAILS, "Open details", style)
                         .on_press(ACTION_OPEN_DETAILS),
                 ),
                 Widget::Button(Button::new(BTN_NOOP, "No-op", style).on_press(ACTION_NOOP)),
-                Widget::text(format!("K2: {} K3: {}", self.k2_hits, self.k3_hits)),
+                Widget::Text(
+                    Text::new(format!("K2: {} K3: {}", self.k2_hits, self.k3_hits))
+                        .color(APP_THEME.primary),
+                ),
             ])
             .spacing(4),
         )
@@ -97,9 +101,12 @@ impl Page for DetailsPage {
     fn view(&self) -> Widget {
         Widget::Column(
             Column::new(vec![
-                Widget::text("Details page"),
-                Widget::text("Press K1 to go back"),
-                Widget::text(format!("K2: {} K3: {}", self.k2_hits, self.k3_hits)),
+                Widget::Text(Text::new("Details page").color(APP_THEME.primary)),
+                Widget::Text(Text::new("Press K1 to go back").color(APP_THEME.primary)),
+                Widget::Text(
+                    Text::new(format!("K2: {} K3: {}", self.k2_hits, self.k3_hits))
+                        .color(APP_THEME.primary),
+                ),
             ])
             .spacing(2),
         )
